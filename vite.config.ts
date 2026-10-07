@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// 部署到 GitHub Pages 时，需要在这里补上 base: '/仓库名/'；当前保持默认根路径。
+// 使用相对 base：产物中的资源以 ./ 引用，因此可部署在任意子路径
+// （例如 GitHub Pages 的 /仓库名/），配置中无需写死仓库名。
 export default defineConfig({
   plugins: [react()],
+  base: './',
 })
