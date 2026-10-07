@@ -6,6 +6,32 @@ import { TextField } from '../components/Field'
 import { IdField } from '../components/IdField'
 import { ModelCard } from './ModelCard'
 
+/** 官方文档列出的运行时包，作为建议项；也可以自己输入 npm 包名或 file:// 路径 */
+const PACKAGE_OPTIONS = [
+  '@opencode/ai/providers/openai-compatible',
+  '@opencode/ai/providers/openai-compatible/responses',
+  '@opencode/ai/providers/openai',
+  '@opencode/ai/providers/openai/chat',
+  '@opencode/ai/providers/openai/responses',
+  '@opencode/ai/providers/anthropic',
+  '@opencode/ai/providers/anthropic-compatible',
+  '@opencode/ai/providers/google',
+  '@opencode/ai/providers/google-vertex',
+  '@opencode/ai/providers/google-vertex/gemini',
+  '@opencode/ai/providers/google-vertex/chat',
+  '@opencode/ai/providers/google-vertex/responses',
+  '@opencode/ai/providers/google-vertex/messages',
+  '@opencode/ai/providers/azure',
+  '@opencode/ai/providers/azure/chat',
+  '@opencode/ai/providers/azure/responses',
+  '@opencode/ai/providers/amazon-bedrock',
+  '@opencode/ai/providers/amazon-bedrock/mantle',
+  '@opencode/ai/providers/amazon-bedrock/mantle/chat',
+  '@opencode/ai/providers/amazon-bedrock/mantle/responses',
+  '@opencode/ai/providers/openrouter',
+  '@opencode/ai/providers/xai',
+]
+
 type ProviderCardProps = {
   id: string
   provider: ProviderConfig
@@ -35,32 +61,30 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
         label="Provider ID"
         value={id}
         takenIds={allIds.filter((other) => other !== id)}
+        forbidden={['/', '#']}
         onCommit={(next) => renameProvider(id, next)}
       />
 
       <TextField
         label="显示名称"
         value={provider.name ?? ''}
+        placeholder="例如 Command Code"
         onChange={(name) => updateProvider(id, { name })}
       />
 
       <TextField
-        label="npm 包名"
-        value={provider.npm ?? ''}
-        placeholder="@ai-sdk/openai-compatible"
-        onChange={(npm) => updateProvider(id, { npm })}
+        label="运行时包"
+        value={provider.package ?? ''}
+        suggestions={PACKAGE_OPTIONS}
+        placeholder="@opencode/ai/providers/openai-compatible"
+        onChange={(value) => updateProvider(id, { package: value })}
       />
 
       <TextField
         label="API 地址"
-        value={provider.options?.baseURL ?? ''}
+        value={provider.settings?.baseURL ?? ''}
+        placeholder="https://api.example.com/v1"
         onChange={(baseURL) => updateProvider(id, { baseURL })}
-      />
-
-      <TextField
-        label="API 密钥"
-        value={provider.options?.apiKey ?? ''}
-        onChange={(apiKey) => updateProvider(id, { apiKey })}
       />
 
       <div className="card__models">

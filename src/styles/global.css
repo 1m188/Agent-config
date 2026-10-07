@@ -181,10 +181,16 @@ button:disabled {
 }
 
 .button--primary {
+  align-self: flex-start;
   padding: 9px 14px;
   border: 1px solid var(--accent);
   background: var(--accent);
   color: #fff;
+}
+
+/* 卡片里的按钮不要被纵向弹性容器拉满整行 */
+.card__models > .button--ghost {
+  align-self: flex-start;
 }
 
 .button--ghost {
@@ -229,4 +235,63 @@ button:disabled {
 
 .preview__copy {
   align-self: flex-start;
+}
+
+/* 卡片内的小分组 */
+.card__group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.card__group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* 一组勾选框 */
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* 思考档位 */
+.reasoning {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reasoning__add {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.reasoning__input {
+  flex: 1;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font-size: 13px;
+}
+
+.chip:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }

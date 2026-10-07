@@ -8,6 +8,8 @@ type IdFieldProps = {
   value: string
   /** 已经被其它条目占用的 id，用来拦重复 */
   takenIds: string[]
+  /** 不允许出现的字符。v2 的模型引用是 provider/model#variant，带这些字符会被截断 */
+  forbidden: string[]
   onCommit: (next: string) => void
 }
 
@@ -17,7 +19,7 @@ type IdFieldProps = {
  * id 同时是配置里的键名，所以每敲一个字就改键名会让 React 把整张卡片当成新的重建、
  * 光标丢失。这里用本地暂存文字、离开输入框时再提交的办法绕开。
  */
-export function IdField({ label, value, takenIds, onCommit }: IdFieldProps) {
+export function IdField({ label, value, takenIds, forbidden, onCommit }: IdFieldProps) {
   const [draft, setDraft] = useState(value)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -33,6 +35,12 @@ export function IdField({ label, value, takenIds, onCommit }: IdFieldProps) {
       // id 不能为空，退回原来的值
       setDraft(value)
       setError('')
+      return
+    }
+
+    const badChar = forbidden.find((char) => next.includes(char))
+    if (badChar !== undefined) {
+      setError(`不能包含「${badChar}」`)
       return
     }
     if (takenIds.includes(next)) {

@@ -9,7 +9,7 @@ export function Form() {
   const setGlobal = useOpencodeStore((state) => state.setGlobal)
   const addProvider = useOpencodeStore((state) => state.addProvider)
 
-  const providers = config.provider ?? {}
+  const providers = config.providers ?? {}
   const providerIds = Object.keys(providers)
 
   return (
@@ -21,12 +21,6 @@ export function Form() {
           value={config.model ?? ''}
           placeholder="myprovider/my-model"
           onChange={(model) => setGlobal({ model })}
-        />
-        <TextField
-          label="小模型"
-          value={config.small_model ?? ''}
-          placeholder="myprovider/my-model"
-          onChange={(small_model) => setGlobal({ small_model })}
         />
       </section>
 
