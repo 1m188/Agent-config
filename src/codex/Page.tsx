@@ -4,7 +4,7 @@
  * 所以预览里会出现两个标签。
  */
 
-import { PreviewPanel } from '../components/PreviewPanel'
+import { PreviewPanel, type PreviewFile } from '../components/PreviewPanel'
 import { Form } from './Form'
 import { toPreviewText } from './preview'
 import { toCatalogJson, useCodexStore } from './store'
@@ -12,10 +12,11 @@ import { findIssues } from './validate'
 
 export function CodexPage() {
   const config = useCodexStore((state) => state.config)
+  const extras = useCodexStore((state) => state.extras)
   const catalogModels = useCodexStore((state) => state.catalogModels)
 
-  const files = [
-    { name: 'config.toml', text: toPreviewText(config) },
+  const files: PreviewFile[] = [
+    { name: 'config.toml', text: toPreviewText(config, extras) },
     { name: 'models.json', text: toCatalogJson(catalogModels) ?? '' },
   ].filter((file) => file.text.trim() !== '')
 

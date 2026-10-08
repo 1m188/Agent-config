@@ -91,6 +91,8 @@ export type CodexProvider = {
    * Codex 官方不建议——优先用上面的环境变量；和它二选一。
    */
   experimental_bearer_token?: string
+  /** 配置里我们不编辑的其余顶层字段，读文件时原样带进来，输出时原样带回去 */
+  extras?: Record<string, unknown>
 }
 
 /** 整份 Codex config.toml。字段都是可选的，空配置本身就是合法的。 */
@@ -107,6 +109,9 @@ type CodexStore = {
   /** 唯一的配置对象。界面和预览都由它算出来。 */
   config: CodexConfig
 
+  /** 配置里我们不编辑的其余顶层字段（plugins / desktop / marketplaces 这些） */
+  extras: Record<string, unknown>
+
   /** 要写进 models.json 的模型清单。空着表示不用目录 */
   catalogModels: CatalogModel[]
 
@@ -116,6 +121,12 @@ type CodexStore = {
     model_reasoning_effort?: string
     model_catalog_json?: string
   }) => void
+
+  /** 用一份从文件读来的配置整体替换当前配置（config 本体 + 我们不编辑的顶层字段） */
+  loadConfig: (config: CodexConfig, extras: Record<string, unknown>) => void
+
+  /** 用一份从文件读来的模型目录整体替换当前目录 */
+  loadCatalogModels: (models: CatalogModel[]) => void
 
   addProvider: () => void
   removeProvider: (id: string) => void
@@ -149,9 +160,15 @@ type CodexStore = {
 export const useCodexStore = create<CodexStore>()((set) => ({
   config: {},
 
+  extras: {},
+
   catalogModels: [],
 
   setGlobal: (patch) => set((state) => ({ config: mergePatch(state.config, patch) })),
+
+  loadConfig: (config, extras) => set({ config, extras }),
+
+  loadCatalogModels: (catalogModels) => set({ catalogModels }),
 
   addProvider: () =>
     set((state) => {

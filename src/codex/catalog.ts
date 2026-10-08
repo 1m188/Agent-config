@@ -24,6 +24,12 @@ export type CatalogModel = {
   levels: string[]
   /** 默认档位，必须是 levels 里的一个 */
   defaultLevel?: string
+  /** 从文件读进来的条目里，我们不编辑的字段原样留在这里（comp_hash、base_instructions 这些） */
+  extras?: Record<string, unknown>
+  /** 各档位的说明文字。从文件读进来的原样保留；新加的档位用自带的默认文案 */
+  levelDescriptions?: Record<string, string>
+  /** 从文件读进来的 model_messages 原样保留；新加的模型用自带的默认提示词 */
+  modelMessages?: unknown
 }
 
 /** Codex 自家模型在用的档位（gpt-5.5 到 gpt-6.1 的并集） */
@@ -62,7 +68,7 @@ export function buildModelsJson(models: CatalogModel[]): { models: unknown[] } {
       default_reasoning_level: model.defaultLevel,
       supported_reasoning_levels: model.levels.map((effort) => ({
         effort,
-        description: LEVEL_DESCRIPTIONS[effort] ?? '',
+        description: model.levelDescriptions?.[effort] ?? LEVEL_DESCRIPTIONS[effort] ?? '',
       })),
       shell_type: 'shell_command',
       visibility: 'list',
@@ -71,7 +77,9 @@ export function buildModelsJson(models: CatalogModel[]): { models: unknown[] } {
       support_verbosity: false,
       truncation_policy: { mode: 'tokens', limit: 10000 },
       experimental_supported_tools: [],
-      model_messages: { instructions_template: instructions },
+      // 从文件读进来的条目，我们没编辑的字段在这里原样带回去，一个不丢
+      ...(model.extras ?? {}),
+      model_messages: model.modelMessages ?? { instructions_template: instructions },
     })),
   }
 }

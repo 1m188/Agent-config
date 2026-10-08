@@ -1,13 +1,20 @@
 /** Codex配置表单 */
 
+import { useRef, useState } from 'react'
 import { SelectField, TextField } from '../components/Field'
 import { BUILT_IN_PROVIDER_IDS } from './ids'
 import { CatalogModelCard } from './CatalogModelCard'
+import { parseCatalog, parseConfig } from './load'
 import { ProviderCard } from './ProviderCard'
 import { useCodexStore } from './store'
 
 /** Codex 模型目录里实际出现的档位（gpt-5.5 到 gpt-6.1 各档的并集） */
 const TIER_OPTIONS = ['low', 'medium', 'high', 'xhigh', 'max', 'ultra']
+
+type FileStatus = {
+  text: string
+  bad: boolean
+}
 
 export function Form() {
   const config = useCodexStore((state) => state.config)
@@ -15,10 +22,43 @@ export function Form() {
   const setGlobal = useCodexStore((state) => state.setGlobal)
   const addProvider = useCodexStore((state) => state.addProvider)
   const addCatalogModel = useCodexStore((state) => state.addCatalogModel)
+  const loadConfig = useCodexStore((state) => state.loadConfig)
+  const loadCatalogModels = useCodexStore((state) => state.loadCatalogModels)
+
+  const configInput = useRef<HTMLInputElement>(null)
+  const catalogInput = useRef<HTMLInputElement>(null)
+  const [status, setStatus] = useState<FileStatus | null>(null)
 
   const providers = config.model_providers ?? {}
   const providerIds = Object.keys(providers)
   const catalogSlugs = catalogModels.map((model) => model.slug)
+
+  /** 读 config.toml，整体替换当前配置。失败了只报错，现在的配置一动不动。 */
+  async function readConfig(file: File) {
+    try {
+      const parsed = parseConfig(await file.text())
+      loadConfig(parsed.config, parsed.extras)
+      setStatus({
+        text: parsed.config.model_catalog_json
+          ? `已读取 ${file.name}，它还指向一个模型目录，点下面的按钮把它也读进来`
+          : `已读取 ${file.name}`,
+        bad: false,
+      })
+    } catch (error) {
+      setStatus({ text: `${file.name}：${(error as Error).message}`, bad: true })
+    }
+  }
+
+  /** 读 config.toml 指向的那个模型目录文件 */
+  async function readCatalog(file: File) {
+    try {
+      const models = parseCatalog(await file.text())
+      loadCatalogModels(models)
+      setStatus({ text: `已读取 ${file.name}（${models.length} 个模型）`, bad: false })
+    } catch (error) {
+      setStatus({ text: `${file.name}：${(error as Error).message}`, bad: true })
+    }
+  }
 
   return (
     <div className="form">
@@ -26,15 +66,65 @@ export function Form() {
         生成两份内容：一份贴进 ~/.codex/config.toml，一份存成模型目录文件
       </p>
 
+      <div className="form__read">
+        <button
+          type="button"
+          className="button--ghost"
+          onClick={() => configInput.current?.click()}
+        >
+          读取配置文件
+        </button>
+        <input
+          ref={configInput}
+          type="file"
+          accept=".toml"
+          hidden
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            // 立刻清空，否则再选同一个文件不会再触发 change
+            event.target.value = ''
+            if (file) void readConfig(file)
+          }}
+        />
+        {config.model_catalog_json && (
+          <>
+            <button
+              type="button"
+              className="button--ghost"
+              onClick={() => catalogInput.current?.click()}
+            >
+              读取它指向的模型目录
+            </button>
+            <input
+              ref={catalogInput}
+              type="file"
+              accept=".json"
+              hidden
+              onChange={(event) => {
+                const file = event.target.files?.[0]
+                event.target.value = ''
+                if (file) void readCatalog(file)
+              }}
+            />
+          </>
+        )}
+        {status && (
+          <p className={status.bad ? 'form__status form__status--bad' : 'form__status'}>
+            {status.text}
+          </p>
+        )}
+      </div>
+
       <section className="card">
         <h3 className="card__title">模型</h3>
 
         <SelectField
           label="默认模型"
           value={config.model ?? ''}
-          options={catalogSlugs}
+          // 当前值可能来自刚读进来的配置，而它的目录还没读——选项里得带上它，否则下拉显示不出来
+          options={[...new Set([...catalogSlugs, ...(config.model ? [config.model] : [])])]}
           emptyLabel="（不指定）"
-          disabled={catalogSlugs.length === 0}
+          disabled={catalogSlugs.length === 0 && !config.model}
           onChange={(model) => setGlobal({ model })}
         />
 
