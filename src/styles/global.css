@@ -36,10 +36,23 @@ body {
   font-size: 22px;
 }
 
-.app__subtitle {
-  margin: 4px 0 0;
+/* agent 的 tab */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tab {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: transparent;
   color: var(--muted);
-  font-size: 14px;
+}
+
+.tab--current {
+  border-color: var(--accent);
+  color: var(--fg);
 }
 
 /* 左右两栏：左边表单，右边预览 */
