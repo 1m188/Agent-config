@@ -1,13 +1,13 @@
 import { PreviewPanel } from './components/PreviewPanel'
 import { Form } from './opencode/Form'
+import { toPreviewText } from './opencode/preview'
 import { useOpencodeStore } from './opencode/store'
 import { findIssues } from './opencode/validate'
 
 export default function App() {
   const config = useOpencodeStore((state) => state.config)
 
-  // 预览和"复制"用的是同一份文本，避免两边不一致
-  const text = JSON.stringify(config, null, 2)
+  const text = toPreviewText(config)
   const issues = findIssues(config)
 
   return (
