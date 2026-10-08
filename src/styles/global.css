@@ -56,6 +56,23 @@ body {
   gap: 16px;
 }
 
+/* 读取配置文件那一块 */
+.form__read {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form__status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.form__status--bad {
+  color: var(--danger);
+}
+
 .section-title {
   margin: 8px 0 0;
   font-size: 15px;
@@ -188,8 +205,9 @@ button:disabled {
   color: #fff;
 }
 
-/* 卡片里的按钮不要被纵向弹性容器拉满整行 */
-.card__models > .button--ghost {
+/* 纵向弹性容器里的按钮不要被拉满整行 */
+.card__models > .button--ghost,
+.form__read > .button--ghost {
   align-self: flex-start;
 }
 

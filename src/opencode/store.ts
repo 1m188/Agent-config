@@ -149,6 +149,10 @@ type OpencodeStore = {
 
   setGlobal: (patch: { model?: string }) => void
 
+  /** 用一份从文件读来的配置整体替换当前配置。文件里我们不认识的字段跟着一起进来，
+   *  之后每个动作只替换自己动过的那一层，所以它们会一直留到预览和复制里。 */
+  loadConfig: (config: OpencodeConfig) => void
+
   addProvider: () => void
   removeProvider: (id: string) => void
   renameProvider: (oldId: string, newId: string) => void
@@ -208,6 +212,8 @@ export const useOpencodeStore = create<OpencodeStore>()((set) => {
     config: createInitialConfig(),
 
     setGlobal: (patch) => set((state) => ({ config: mergePatch(state.config, patch) })),
+
+    loadConfig: (config) => set({ config }),
 
     addProvider: () =>
       set((state) => {
