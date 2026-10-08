@@ -56,6 +56,34 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
         onChange={(env_key) => updateProvider(id, { env_key })}
       />
 
+      {provider.env_key ? (
+        <p className="empty-hint">
+          key 本身不写进配置。把它设成环境变量 {provider.env_key} 再重启 Codex：
+          <br />
+          setx {provider.env_key} "sk-你的key"
+        </p>
+      ) : (
+        <p className="empty-hint">
+          这里填的是环境变量的名字，不是 key 本身——key 设成那个变量就行：
+          <br />
+          setx MY_API_KEY "sk-你的key"
+        </p>
+      )}
+
+      <TextField
+        label="API Key（明文写进配置）"
+        value={provider.experimental_bearer_token ?? ''}
+        placeholder="sk-..."
+        onChange={(experimental_bearer_token) =>
+          updateProvider(id, { experimental_bearer_token })
+        }
+      />
+
+      <p className="empty-hint">
+        Codex 官方不建议明文存 key，和上面的环境变量二选一。填了它就不用再设环境变量，
+        但这份配置里（包括预览和复制出去的内容）就会一直带着 key。
+      </p>
+
       <TextField
         label="给用户的说明"
         value={provider.env_key_instructions ?? ''}

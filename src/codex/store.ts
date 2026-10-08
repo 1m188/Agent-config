@@ -86,6 +86,11 @@ export type CodexProvider = {
   env_key?: string
   /** 给用户看的说明：去哪儿拿 key、设成哪个变量 */
   env_key_instructions?: string
+  /**
+   * 明文写进配置的 key（Authorization: Bearer 的值）。
+   * Codex 官方不建议——优先用上面的环境变量；和它二选一。
+   */
+  experimental_bearer_token?: string
 }
 
 /** 整份 Codex config.toml。字段都是可选的，空配置本身就是合法的。 */
@@ -122,6 +127,7 @@ type CodexStore = {
       base_url?: string
       env_key?: string
       env_key_instructions?: string
+      experimental_bearer_token?: string
     },
   ) => void
 
@@ -194,7 +200,13 @@ export const useCodexStore = create<CodexStore>()((set) => ({
 
       const next = mergePatch(
         current,
-        pickMentioned(patch, ['name', 'base_url', 'env_key', 'env_key_instructions']),
+        pickMentioned(patch, [
+          'name',
+          'base_url',
+          'env_key',
+          'env_key_instructions',
+          'experimental_bearer_token',
+        ]),
       )
 
       return { config: { ...state.config, model_providers: { ...providers, [id]: next } } }
