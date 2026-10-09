@@ -326,3 +326,27 @@ button:disabled {
   border-color: var(--danger);
   color: var(--danger);
 }
+
+/* pi 的思考档位映射（每档一行：档位名 + 三态下拉 + 可选的映射值） */
+.thinking-map {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.thinking-map__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.thinking-map__level {
+  flex: 0 0 150px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.thinking-map__row .field__input {
+  flex: 1;
+  min-width: 0;
+}

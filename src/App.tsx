@@ -7,10 +7,12 @@
 import { useState } from 'react'
 import { CodexPage } from './codex/Page'
 import { OpencodePage } from './opencode/Page'
+import { PiPage } from './pi/Page'
 
 const TABS = [
   { label: 'OpenCode', Page: OpencodePage },
   { label: 'Codex', Page: CodexPage },
+  { label: 'Pi', Page: PiPage },
 ]
 
 export default function App() {
