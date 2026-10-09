@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agent Config</title>
+    <script>
+      // 首帧之前按存的偏好（或系统深浅）设 data-theme，避免刷新时闪一下默认的黑色
+      var theme = localStorage.getItem('theme')
+      if (theme === 'light' || (theme !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.dataset.theme = 'light'
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -8,6 +8,27 @@
   --muted: #9aa0a6;
   --accent: #5b8cff;
   --danger: #ff6b6b;
+  --field-bg: #0e1016;
+  --issue-border: #5a2b2b;
+  --issue-bg: #2a1c1c;
+  --issue-fg: #ffb4b4;
+}
+
+/* 白天模式：data-theme='light' 时覆盖上面整套变量 */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --panel-2: #eef0f4;
+  --border: #d9dde4;
+  --fg: #1e232b;
+  --muted: #687080;
+  --accent: #3b6fe0;
+  --danger: #d94545;
+  --field-bg: #f7f8fa;
+  --issue-border: #eccfcf;
+  --issue-bg: #fdf1f1;
+  --issue-fg: #b03d3d;
 }
 
 * {
@@ -29,6 +50,38 @@ body {
 
 .app__header {
   margin-bottom: 20px;
+}
+
+/* 主题切换（页头右上角三段选择） */
+.app__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.theme-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.theme-switch__option {
+  padding: 5px 12px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.theme-switch__option + .theme-switch__option {
+  border-left: 1px solid var(--border);
+}
+
+.theme-switch__option--current {
+  background: var(--panel-2);
+  color: var(--fg);
 }
 
 .app__title {
@@ -167,7 +220,7 @@ body {
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #0e1016;
+  background: var(--field-bg);
   color: var(--fg);
   font-family: inherit;
   font-size: 14px;
@@ -243,10 +296,10 @@ button:disabled {
 .preview__issues {
   margin: 0;
   padding: 10px 12px 10px 28px;
-  border: 1px solid #5a2b2b;
+  border: 1px solid var(--issue-border);
   border-radius: 8px;
-  background: #2a1c1c;
-  color: #ffb4b4;
+  background: var(--issue-bg);
+  color: var(--issue-fg);
   font-size: 13px;
 }
 
