@@ -1,5 +1,6 @@
 /** pi 的 Provider 配置卡片 */
 
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { SelectField, TextField } from '../components/Field'
 import { IdField } from '../components/IdField'
 import { checkProviderId } from './ids'
@@ -66,6 +67,8 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
   const addModel = usePiStore((state) => state.addModel)
 
   const modelIds = provider.models.map((model) => model.id)
+  // 模型卡片的增删走平滑动画
+  const [modelList] = useAutoAnimate<HTMLDivElement>()
 
   return (
     <section className="card">
@@ -120,9 +123,11 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
           这里的模型会出现在 pi 的 /model 选择器里。provider 没有可用凭据时，模型不会出现。
         </p>
 
-        {provider.models.map((model) => (
-          <ModelCard key={model.id} providerId={id} model={model} allIds={modelIds} />
-        ))}
+        <div className="card-list" ref={modelList}>
+          {provider.models.map((model) => (
+            <ModelCard key={model.id} providerId={id} model={model} allIds={modelIds} />
+          ))}
+        </div>
 
         <button type="button" className="button--ghost" onClick={() => addModel(id)}>
           添加模型

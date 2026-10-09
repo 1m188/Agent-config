@@ -1,6 +1,7 @@
 /** Opencode配置表单 */
 
 import { useRef, useState } from 'react'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { useOpencodeStore } from './store'
 import { TextField } from '../components/Field'
 import { ProviderCard } from './ProviderCard'
@@ -19,6 +20,8 @@ export function Form() {
 
   const fileInput = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<FileStatus | null>(null)
+  // provider 卡片的增删和重排走平滑动画
+  const [providerList] = useAutoAnimate<HTMLDivElement>()
 
   const providers = config.providers ?? {}
   const providerIds = Object.keys(providers)
@@ -75,14 +78,16 @@ export function Form() {
       <h2 className="section-title">Provider</h2>
 
       {providerIds.length === 0 && (
-        <p className="empty-hint">
+        <p className="empty-state">
           还没有 Provider。第三方 API 是通过 Provider 接入的，点下面的按钮加一个。
         </p>
       )}
 
-      {providerIds.map((id) => (
-        <ProviderCard key={id} id={id} provider={providers[id]} allIds={providerIds} />
-      ))}
+      <div className="card-list" ref={providerList}>
+        {providerIds.map((id) => (
+          <ProviderCard key={id} id={id} provider={providers[id]} allIds={providerIds} />
+        ))}
+      </div>
 
       <button type="button" className="button--primary" onClick={addProvider}>
         添加 Provider

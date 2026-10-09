@@ -1,5 +1,6 @@
 /** Provider 配置卡片 */
 
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import type { ProviderConfig } from './store'
 import { useOpencodeStore } from './store'
 import { TextField } from '../components/Field'
@@ -47,6 +48,8 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
 
   const models = provider.models ?? {}
   const modelIds = Object.keys(models)
+  // 模型卡片的增删走平滑动画
+  const [modelList] = useAutoAnimate<HTMLDivElement>()
 
   return (
     <section className="card">
@@ -90,15 +93,17 @@ export function ProviderCard({ id, provider, allIds }: ProviderCardProps) {
       <div className="card__models">
         <h4 className="card__subtitle">模型</h4>
 
-        {modelIds.map((modelId) => (
-          <ModelCard
-            key={modelId}
-            providerId={id}
-            modelId={modelId}
-            model={models[modelId]}
-            allIds={modelIds}
-          />
-        ))}
+        <div className="card-list" ref={modelList}>
+          {modelIds.map((modelId) => (
+            <ModelCard
+              key={modelId}
+              providerId={id}
+              modelId={modelId}
+              model={models[modelId]}
+              allIds={modelIds}
+            />
+          ))}
+        </div>
 
         <button type="button" className="button--ghost" onClick={() => addModel(id)}>
           添加模型

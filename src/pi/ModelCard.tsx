@@ -105,8 +105,14 @@ export function ModelCard({ providerId, model, allIds }: ModelCardProps) {
         <button type="button" className="button--ghost" onClick={() => setShowMap(!showMap)}>
           {showMap ? '收起' : '展开'}思考档位映射（高级）
         </button>
-        {showMap ? (
-          <>
+        {!showMap && (
+          <p className="empty-hint">
+            minimal~high 不配置就是可用（透传）；xhigh/max 必须显式映射才会出现在
+            /thinking 里。要调档位可用性就展开。
+          </p>
+        )}
+        <div className={showMap ? 'collapse collapse--open' : 'collapse'}>
+          <div className="collapse__inner">
             {mapSize > 0 && (
               <p className="empty-hint">
                 已配置 {mapSize} 档。大多数 provider 用 pi 的档位名，整个不写就是原样透传。
@@ -116,21 +122,22 @@ export function ModelCard({ providerId, model, allIds }: ModelCardProps) {
               value={model.thinkingLevelMap ?? {}}
               onChange={(map) => setModelThinkingMap(providerId, model.id, map)}
             />
-          </>
-        ) : (
-          <p className="empty-hint">
-            minimal~high 不配置就是可用（透传）；xhigh/max 必须显式映射才会出现在
-            /thinking 里。要调档位可用性就展开。
-          </p>
-        )}
+          </div>
+        </div>
       </div>
 
       <div className="card__group">
         <button type="button" className="button--ghost" onClick={() => setShowCompat(!showCompat)}>
           {showCompat ? '收起' : '展开'}兼容性（高级）
         </button>
-        {showCompat ? (
-          <>
+        {!showCompat && (
+          <p className="empty-hint">
+            DeepSeek 系的中转常需要 thinkingFormat=deepseek 和 maxTokensField=max_tokens，
+            其它情况一般不用动。
+          </p>
+        )}
+        <div className={showCompat ? 'collapse collapse--open' : 'collapse'}>
+          <div className="collapse__inner">
             <SelectField
               label="思考格式（thinkingFormat）"
               value={model.compat?.thinkingFormat ?? ''}
@@ -150,13 +157,8 @@ export function ModelCard({ providerId, model, allIds }: ModelCardProps) {
                 compat 里还有 {compatExtrasCount} 个这个工具不编辑的字段，会原样保留。
               </p>
             )}
-          </>
-        ) : (
-          <p className="empty-hint">
-            DeepSeek 系的中转常需要 thinkingFormat=deepseek 和 maxTokensField=max_tokens，
-            其它情况一般不用动。
-          </p>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   )

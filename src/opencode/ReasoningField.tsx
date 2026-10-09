@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { SelectField, TextField } from '../components/Field'
 
 /** 市面上常见的思考档位，作为建议项。也可以自己输入别的值。 */
@@ -20,6 +21,8 @@ export function ReasoningField({
   onChangeDefault,
 }: ReasoningFieldProps) {
   const [draft, setDraft] = useState('')
+  // 档位标签的增删走平滑动画
+  const [chipsRef] = useAutoAnimate<HTMLDivElement>()
 
   function add() {
     const tier = draft.trim()
@@ -47,7 +50,7 @@ export function ReasoningField({
       </div>
 
       {tiers.length > 0 && (
-        <div className="chips">
+        <div className="chips" ref={chipsRef}>
           {tiers.map((tier) => (
             <button
               key={tier}

@@ -1,10 +1,11 @@
-/** 页面外壳：标题、主题切换、agent 的 tab，以及当前 agent 的页面。
+/** 页面外壳：吸顶顶栏（标题、agent 的 tab、主题切换），以及当前 agent 的页面。
  *
  * 页面主体由各 agent 自己渲染，外壳只负责选哪个。
  * 各 agent 的 store 是各自独立的单例，切 tab 不会丢另一边的东西。
  */
 
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { CodexPage } from './codex/Page'
 import { OpencodePage } from './opencode/Page'
 import { PiPage } from './pi/Page'
@@ -48,11 +49,30 @@ export default function App() {
     setPreference(value)
   }
 
+  // 切 tab 走 View Transitions 交叉淡入；不支持的浏览器退化为即时切换
+  const switchTab = (tab: (typeof TABS)[number]) => {
+    document.startViewTransition?.(() => {
+      flushSync(() => setCurrent(tab))
+    })
+  }
+
   return (
-    <div className="app">
-      <header className="app__header">
-        <div className="app__topline">
-          <h1 className="app__title">Agent Config</h1>
+    <>
+      <header className="topbar">
+        <div className="topbar__inner">
+          <h1 className="topbar__title">Agent Config</h1>
+          <nav className="tabs" aria-label="Agent">
+            {TABS.map((tab) => (
+              <button
+                key={tab.label}
+                type="button"
+                className={tab === current ? 'tab tab--current' : 'tab'}
+                onClick={() => switchTab(tab)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
           <div className="theme-switch" role="group" aria-label="主题">
             {THEME_OPTIONS.map((option) => (
               <button
@@ -70,21 +90,11 @@ export default function App() {
             ))}
           </div>
         </div>
-        <nav className="tabs">
-          {TABS.map((tab) => (
-            <button
-              key={tab.label}
-              type="button"
-              className={tab === current ? 'tab tab--current' : 'tab'}
-              onClick={() => setCurrent(tab)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
       </header>
 
-      <Page />
-    </div>
+      <div className="app">
+        <Page />
+      </div>
+    </>
   )
 }

@@ -1,6 +1,7 @@
 /** 预览面板 */
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 /** 预览里的一个文件。有的 agent（比如 Codex）一次产出不止一份 */
 export type PreviewFile = {
@@ -43,12 +44,10 @@ export function PreviewPanel({ files, issues }: PreviewPanelProps) {
         </ul>
       )}
 
-      {isEmpty ? (
-        <p className="empty-hint">还没有内容。</p>
-      ) : (
-        <>
-          {files.length > 1 && (
-            <nav className="tabs">
+      <div className="preview__frame">
+        <div className="preview__bar">
+          {files.length > 1 ? (
+            <nav className="tabs" aria-label="预览文件">
               {files.map((file, i) => (
                 <button
                   key={file.name}
@@ -60,19 +59,32 @@ export function PreviewPanel({ files, issues }: PreviewPanelProps) {
                 </button>
               ))}
             </nav>
+          ) : (
+            <span className="preview__file">{current?.name ?? ''}</span>
           )}
-          <pre className="preview__text">{current.text}</pre>
-        </>
-      )}
+        </div>
 
-      <button
-        type="button"
-        className="button--primary preview__copy"
-        onClick={copy}
-        disabled={hasIssues || isEmpty}
-      >
-        {buttonLabel}
-      </button>
+        {isEmpty ? (
+          <p className="empty-hint preview__empty">还没有内容。</p>
+        ) : (
+          <pre className="preview__text">{current.text}</pre>
+        )}
+      </div>
+
+      {/* 复制按钮挂到 body：aside 的入场动画带 transform，transform 的祖先会把
+          position:fixed 劫持成相对自己定位， portal 出去才能稳定钉在视口右下角 */}
+      {!isEmpty &&
+        createPortal(
+          <button
+            type="button"
+            className="button--primary preview__copyfab"
+            onClick={copy}
+            disabled={hasIssues}
+          >
+            {buttonLabel}
+          </button>,
+          document.body,
+        )}
     </section>
   )
 }

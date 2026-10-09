@@ -1,6 +1,7 @@
 /** Codex配置表单 */
 
 import { useRef, useState } from 'react'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { SelectField, TextField } from '../components/Field'
 import { BUILT_IN_PROVIDER_IDS } from './ids'
 import { CatalogModelCard } from './CatalogModelCard'
@@ -28,6 +29,9 @@ export function Form() {
   const configInput = useRef<HTMLInputElement>(null)
   const catalogInput = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<FileStatus | null>(null)
+  // 接入点卡片和目录模型卡片的增删走平滑动画
+  const [providerList] = useAutoAnimate<HTMLDivElement>()
+  const [catalogList] = useAutoAnimate<HTMLDivElement>()
 
   const providers = config.model_providers ?? {}
   const providerIds = Object.keys(providers)
@@ -155,14 +159,16 @@ export function Form() {
       <h2 className="section-title">接入点</h2>
 
       {providerIds.length === 0 && (
-        <p className="empty-hint">
+        <p className="empty-state">
           还没有接入点。第三方 API 是通过接入点接的，点下面的按钮加一个。
         </p>
       )}
 
-      {providerIds.map((id) => (
-        <ProviderCard key={id} id={id} provider={providers[id]} allIds={providerIds} />
-      ))}
+      <div className="card-list" ref={providerList}>
+        {providerIds.map((id) => (
+          <ProviderCard key={id} id={id} provider={providers[id]} allIds={providerIds} />
+        ))}
+      </div>
 
       <button type="button" className="button--primary" onClick={addProvider}>
         添加接入点
@@ -175,14 +181,16 @@ export function Form() {
         不加的话，自定义模型不会出现在 /model 里。
       </p>
 
-      {catalogModels.map((model) => (
-        <CatalogModelCard
-          key={model.slug}
-          slug={model.slug}
-          model={model}
-          allSlugs={catalogSlugs}
-        />
-      ))}
+      <div className="card-list" ref={catalogList}>
+        {catalogModels.map((model) => (
+          <CatalogModelCard
+            key={model.slug}
+            slug={model.slug}
+            model={model}
+            allSlugs={catalogSlugs}
+          />
+        ))}
+      </div>
 
       <button type="button" className="button--primary" onClick={addCatalogModel}>
         添加目录模型
