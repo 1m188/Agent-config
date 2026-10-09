@@ -1,6 +1,6 @@
 # Agent-config
 
-可视化生成 AI 编码 Agent 的第三方 Provider 配置。纯前端静态页面（GitHub Pages），所有处理都在浏览器本地完成，没有后端。
+可视化生成 AI 编码 Agent 的第三方 Provider 配置。纯前端静态页面（[GitHub Pages](https://1m188.github.io/Agent-config/)），所有处理都在浏览器本地完成，没有后端。
 
 ## 技术栈
 
